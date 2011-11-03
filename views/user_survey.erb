@@ -1,0 +1,192 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Delphi Method Surveys</title>	
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+  google.load("prototype", "1.7.0.0");
+  google.load("scriptaculous", "1.9.0");
+</script>
+<style type="text/css">
+	.command {
+		font-size: 70%;
+		font-style: italic;
+		cursor: pointer;
+	}
+	.add_comment,
+	#add_option {
+		color: blue;
+	}
+	.deletable {
+		color: red;
+	}
+	#make_submission {
+		color: green;
+	}
+	#make_submission.inactive,
+	#distribute.inactive {
+		color: gray;
+		cursor: default;
+	}
+	
+	a {
+		text-decoration: none;
+		color: inherit;
+	}
+	
+	#distribute,
+	#reset {
+		color: red;
+	}
+	.arrow {
+		font-size: 70%;
+		cursor: pointer;
+	}
+	li:first-child .up {
+		display: none;
+	}
+	li:last-child .down {
+		display: none;
+	}
+	.arrow {
+		color: purple;
+		font-style: italic;
+		cursor: pointer;
+	}
+</style>
+</head>
+<body>
+	<p>Hello, <%= survey.user %>, this survey is "<%= survey.survey %>", please sort and comment on the options below:
+	<ol id="options">
+		<% survey.options.each do |option| %>
+		<li class="option">
+			<span class="editable"><%= option.description %></span>
+			<span class="up arrow">up</span>
+			<span class="add_comment command">comment</span>
+			<span class="deletable command">delete</span>
+			<span class="down arrow">down</span>
+			<ul>
+				<% option.comments.each do |comment| %>
+				<li><span class="editable"><%= comment %></span> <span class="deletable command">delete</span></li>
+				<% end %>
+			</ul>
+		</li>
+		<% end %>
+	</ol>
+	<p><span id="add_option" class="command">add option</span> <span id="make_submission" class="command <% if !admin %>inactive<% end %>">submit survey</span> 
+	<% if admin %>
+		<span id="distribute" class="command inactive"><a href="/delphi/<%= survey.user %>/<%= survey.survey %>/distribute">distribute!</a></span>
+	<% else %>
+		<span id="reset" class="command"><a href="/delphi/<%= survey.user %>/<%= survey.survey %>/reset">reset!</a></span>
+	<% end %>
+	
+	<script type="text/javascript">
+		(function() {
+			function live(el) {
+				return el != undefined && el != document
+			}
+			
+			function mark_modified() {
+				$('make_submission').removeClassName('inactive');
+				<% if admin %>$('distribute').addClassName('inactive');<% end %>
+			}
+			function mark_unmodified() {
+				$('make_submission').addClassName('inactive');
+				<% if admin %>$('distribute').removeClassName('inactive');<% end %>
+			}		
+			function is_modified() {
+				return !$('make_submission').hasClassName('inactive');
+			}	
+			
+			Sortable.create("options", {onChange: mark_modified});
+			
+			$("options").observe("click", function(event) {
+				var el = event.findElement(".add_comment");
+				if (live(el)) {
+					el.up("li").down("ul").insert({
+						bottom: '<li><span class="editable">new comment</span> <span class="deletable command">delete</span></li>'
+					});
+					mark_modified();
+				};
+			});
+			
+			$("add_option").observe("click", function(event) {
+				$("options").insert({
+					bottom: '<li class="option"><span class="editable">new option</span>' +
+							'  <span class="up arrow">up</span>' +
+							'  <span class="add_comment command">comment</span>'+
+							'  <span class="deletable command">delete</span>' +
+							'  <span class="down arrow">down</span>' +
+							'  <ul></ul></li>'
+				});
+				
+				Sortable.destroy("options");
+				Sortable.create("options", {onChange: mark_modified});
+				mark_modified();
+			});
+
+			$("options").observe("click", function(event) {
+				var el = event.findElement(".deletable");
+				if (live(el)) {
+					el.up("li").remove();
+					mark_modified();
+				};
+			});
+
+			$("options").observe("click", function(event) {
+				var el = event.findElement(".up");
+				if (live(el)) {
+					var source = el.up("li");
+					var prev = source.previous();
+					source.remove();
+					prev.insert({before: source});
+					mark_modified();
+				};
+			});
+
+			$("options").observe("click", function(event) {
+				var el = event.findElement(".down");
+				if (live(el)) {
+					var source = el.up("li");
+					var next = source.next();
+					source.remove();
+					next.insert({after: source});
+					mark_modified();
+				};
+			});
+			
+			$("options").observe("click", function(event) {
+				var el = event.findElement(".editable");
+				if (live(el)) {
+					var change = prompt("Change:", el.innerHTML)
+					if (change) {
+						el.innerHTML = change;
+						mark_modified();
+					}
+				};
+			});
+			
+			$("make_submission").observe("click", function(event) {
+				if (is_modified()) {
+					var submission = ""
+					$$("#options .option").each(function(el) {
+						submission += el.down("span").innerHTML + "\n";
+						var opt = el.down("li")
+						while (opt) {
+							submission += "  " + opt.down("span").innerHTML + "\n";
+							opt = opt.next("li");
+						}
+					});
+				
+					new Ajax.Request('/delphi/<%= survey.user %>/<%= survey.survey %>', {
+				    	postBody: submission,
+						onSuccess: function(response) { 
+							mark_unmodified();
+						}
+					});	
+				}
+			});
+		}())
+	</script>
+</body>
+</html>

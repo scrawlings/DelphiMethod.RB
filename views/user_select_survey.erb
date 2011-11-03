@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Delphi Method Surveys</title>
+</head>
+<body>
+	<p>Hello, <%= username %></p>
+	<% if !user_surveys.empty? %>
+	<p>You can work on these surveys:</p>
+	<ul>
+		<% user_surveys.each do |survey| %>
+		<li><a href="/delphi/<%= username %>/<%= survey %>"><%= survey %></a>
+		<% end %>
+	</ul>
+	<% end %>
+	
+	<% if !available_surveys.empty? %>
+	<p>You may start these surveys:</p>
+	<ul>
+		<% available_surveys.each do |survey| %>
+		<li><a href="/delphi/<%= username %>/<%= survey %>"><%= survey %></a> 
+			<% if admin %>
+			<a href="/delphi/<%= username %>/<%= survey %>/consolidate"><i><small>consolidate</small></i></a>
+			<a href="/delphi/<%= username %>/<%= survey %>/distribute"><i><small>distribute</small></i></a>
+			<% end %>
+		<% end %>
+	</ul>
+	<% end %>
+	
+	<% if admin %>
+		<form  name="new_survey" action="/new_survey" method="get">
+			Survey: <input type="text" name="survey" /> <input type="submit" value="Submit" /> 
+		</form>
+	<% end %>
+</body>
+</html>
