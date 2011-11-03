@@ -1,0 +1,4 @@
+The directories "orginials" and "surveys" are where the data is actually persisted. 
+User names are just directories within those, no security nor anything fancy. 
+The administrator directory/login is special. 
+Quick and dirty. 
