@@ -191,11 +191,13 @@
 				make_submission();
 			});
 			
+			<% if !consolidation %>
 			setInterval(function() {
 				if(is_modified()) {
 					make_submission();
 				}
 			}, 5000);
+			<% end %>
 		}())
 	</script>
 </body>

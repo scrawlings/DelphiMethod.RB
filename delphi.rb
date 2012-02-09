@@ -40,7 +40,8 @@ get '/delphi/:username/:survey' do
       :locals => {
         :survey => Submission.new(destination(params[:username]), params[:username], params[:survey], "./originals").load_survey,
         :username => params[:username],
-        :admin => admin?(params[:username])
+        :admin => admin?(params[:username]),
+        :consolidation => false
       }
 end
 
@@ -51,7 +52,8 @@ get '/delphi/administrator/:survey/consolidate' do
         :survey => survey.consolidate.export_synthesis,
         :username => "administrator",
         :admin => true,
-        :users => survey.users
+        :users => survey.users,
+        :consolidation => true
       }
 end
 
