@@ -76,7 +76,7 @@
 	<% if admin %>
 		<span id="distribute" class="command inactive button"><a href="/delphi/<%= survey.user %>/<%= survey.survey %>/distribute">distribute!</a></span>
 	<% end %>
-	<% if admin %>
+	<% if consolidation %>
 		<p>These users have contributed: <%= users.join(", ") %>.
 	<% end %>
 	
