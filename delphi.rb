@@ -45,11 +45,13 @@ get '/delphi/:username/:survey' do
 end
 
 get '/delphi/administrator/:survey/consolidate' do
+  survey = Survey.new("./surveys", params[:survey], "./originals")
   erb :user_survey, 
       :locals => {
-        :survey => Survey.new("./surveys", params[:survey], "./originals").consolidate.export_synthesis,
+        :survey => survey.consolidate.export_synthesis,
         :username => "administrator",
-        :admin => true
+        :admin => true,
+        :users => survey.users
       }
 end
 

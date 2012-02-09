@@ -55,7 +55,7 @@
 </style>
 </head>
 <body>
-	<p>Hello, <%= survey.user %>, this survey is "<%= survey.survey %>", please sort and comment on the options below:
+	<p>Hello, <%= survey.user %>, this survey is "<%= survey.survey %>", please sort and comment on the options below:	
 	<ol id="options">
 		<% survey.options.each do |option| %>
 		<li class="option">
@@ -75,6 +75,9 @@
 	<p><span id="add_option" class="command button">add option</span> <span id="make_submission" class="command <% if !admin %>inactive<% end %> button">submit survey</span> 
 	<% if admin %>
 		<span id="distribute" class="command inactive button"><a href="/delphi/<%= survey.user %>/<%= survey.survey %>/distribute">distribute!</a></span>
+	<% end %>
+	<% if admin %>
+		<p>These users have contributed: <%= users.join(", ") %>.
 	<% end %>
 	
 	<script type="text/javascript">

@@ -17,13 +17,22 @@ class Survey
     self
   end
   
-  def distribute!
+  def users
+    result = []
     Dir.new(@base).each do |user|
       if user =~ /^\w+/
         if File.exist?(@base+"/"+user+"/"+@survey)
-          FileUtils.cp original_file, @base+"/"+user+"/"+@survey
+          result.push user
         end
       end
+    end
+    puts result
+    result
+  end
+  
+  def distribute!
+    users.each do |user|
+      FileUtils.cp original_file, @base+"/"+user+"/"+@survey
     end
   end
   
@@ -36,12 +45,8 @@ class Survey
   end
   
   def load_submissions
-    Dir.new(@base).each do |user|
-      if user =~ /^\w+/
-        if File.exist?(@base+"/"+user+"/"+@survey)
-          @submissions.push Submission.new @base, user, @survey, @master
-        end
-      end
+    users.each do |user|
+      @submissions.push Submission.new @base, user, @survey, @master
     end
     
     @submissions.each do |submission|
