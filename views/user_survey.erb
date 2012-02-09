@@ -34,8 +34,7 @@
 		color: inherit;
 	}
 	
-	#distribute,
-	#reset {
+	#distribute {
 		color: red;
 	}
 	.arrow {
@@ -73,11 +72,9 @@
 		</li>
 		<% end %>
 	</ol>
-	<p><span id="add_option" class="command">add option</span> <span id="make_submission" class="command <% if !admin %>inactive<% end %>">submit survey</span> 
+	<p><span id="add_option" class="command button">add option</span> <span id="make_submission" class="command <% if !admin %>inactive<% end %> button">submit survey</span> 
 	<% if admin %>
-		<span id="distribute" class="command inactive"><a href="/delphi/<%= survey.user %>/<%= survey.survey %>/distribute">distribute!</a></span>
-	<% else %>
-		<span id="reset" class="command"><a href="/delphi/<%= survey.user %>/<%= survey.survey %>/reset">reset!</a></span>
+		<span id="distribute" class="command inactive button"><a href="/delphi/<%= survey.user %>/<%= survey.survey %>/distribute">distribute!</a></span>
 	<% end %>
 	
 	<script type="text/javascript">
@@ -166,12 +163,12 @@
 				};
 			});
 			
-			$("make_submission").observe("click", function(event) {
+			function make_submission() {
 				if (is_modified()) {
 					var submission = ""
 					$$("#options .option").each(function(el) {
 						submission += el.down("span").innerHTML + "\n";
-						var opt = el.down("li")
+						var opt = el.down("li");
 						while (opt) {
 							submission += "  " + opt.down("span").innerHTML + "\n";
 							opt = opt.next("li");
@@ -185,7 +182,17 @@
 						}
 					});	
 				}
+			}
+
+			$("make_submission").observe("click", function(event) {
+				make_submission();
 			});
+			
+			setInterval(function() {
+				if(is_modified()) {
+					make_submission();
+				}
+			}, 5000);
 		}())
 	</script>
 </body>
