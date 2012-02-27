@@ -2,6 +2,7 @@ require "bundler/setup"
 require 'sinatra'
 require './surveys'
 require './survey'
+require 'uri'
 
 def admin?(user_name) 
   user_name == "administrator"
@@ -16,10 +17,14 @@ get '/' do
 end
 
 get '/login' do
+  puts "----------"
+  puts "#{params[:survey]}"
+  puts "redirecting to: /delphi/#{params[:username]}/#{URI.encode(params[:survey])}"
+  puts "----------"
   if params[:survey] == "" then
     redirect to("/delphi/#{params[:username]}")
   else
-    redirect to("/delphi/#{params[:username]}/#{params[:survey]}")
+    redirect to("/delphi/#{params[:username]}/#{URI.encode(params[:survey])}")
   end
 end
 
