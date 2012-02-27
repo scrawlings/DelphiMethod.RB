@@ -6,6 +6,7 @@
 <body>
 	<form  name="login" action="/login" method="get">
 		Username: <input type="text" name="username" /> <input type="submit" value="Submit" />
+		<input type="hidden" name="survey" value="<%= if defined? survey then  survey end %>">
 	</form>
 </body>
 </html>

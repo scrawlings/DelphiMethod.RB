@@ -16,7 +16,11 @@ get '/' do
 end
 
 get '/login' do
-  redirect to("/delphi/#{params[:username]}")
+  if params[:survey] == "" then
+    redirect to("/delphi/#{params[:username]}")
+  else
+    redirect to("/delphi/#{params[:username]}/#{params[:survey]}")
+  end
 end
 
 get '/new_survey' do
@@ -32,6 +36,13 @@ get '/delphi/:username' do
         :user_surveys => surveys.user_surveys,
         :username => params[:username],
         :admin => admin?(params[:username])
+      }
+end
+
+get '/delphi/survey/:survey' do
+  erb :index,
+      :locals => {
+        :survey => params[:survey]
       }
 end
 
